@@ -1,0 +1,36 @@
+---
+title: "string_practice"
+author: "zachyloo"
+format: html
+editor: visual
+---
+
+```{r}
+pacman::p_load("datapasta", "tidyverse")
+alarm_report <-data.frame(
+  stringsAsFactors = FALSE,
+              date = c("2020-03-14", "2020-03-15", "2020-04-10", "2020-04-18"),
+          building = c("Engineering-North",
+                       "Bren Hall","Engineering-South","Engr-North"),
+     alarm_message = c("10:02am -- HVAC system down, facilities management alerted",
+                       "8:24am -- Elevator North out of service",
+                       "12:41am -- Fire alarm, UCSB fire responded and cleared",
+                       "9:58pm -- Campus point emergency siren, UCPD responded")
+)
+```
+
+Replace the “Engr” with “Engineering” in the building column
+Separate the building column into two separate columns, building and wing, separated at the dash
+Only keep observations with the word “responded” in the alarm_message column
+Separate the message time from the rest of the message by separating at --
+Convert the date column to a Date class using lubridate
+
+```{r}
+# Replace the “Engr” with “Engineering” in building col
+alarm_report_fixed <- alarm_report |> 
+  mutate(building = str_replace(building, pattern = "Engr", replacement = "Engineering")) |> 
+  separate(building, into = c("building", "wing"), sep = "-") |> 
+  separate(alarm_message, into = c("time", "message"), sep = "--") |> 
+  mutate(date = as_date(date))
+```
+

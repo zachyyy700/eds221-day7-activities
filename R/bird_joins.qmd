@@ -27,13 +27,13 @@ bird_subset <- bird_observations |>
 1. Left join
 ```{r}
 # left join sites and taxalist dfs
-bird_subset <- left_join(x = bird_subset, y = sites, by = join_by(site_id)) # keep everything in 'x' and matches with 'y'
-bird_subset <- left_join(x = bird_subset, y = taxalist, by = join_by(species_id))
+bird_left <- left_join(x = bird_subset, y = sites, by = join_by(site_id)) # keep everything in 'x' and matches with 'y'
+bird_left <- left_join(x = bird_left, y = taxalist, by = join_by(species_id))
 ```
 
 2. Full join
 ```{r}
-bird_full <- full_join(x = bird_subset, y = sites, by = join_by(site_id)) # added '.x' and '.y' columns from both dfs
+bird_full <- full_join(x = bird_subset, y = sites, by = join_by(site_id)) 
 ```
 
 ## Task 2
@@ -68,5 +68,15 @@ bird_by_park_month <- bird_all_subset |>
   group_by(park_name, survey_month) |> 
   summarize(bird_total = sum(bird_count, na.rm = TRUE)) |> 
   filter(park_name %in% c("Lindo", "Orme", "Palomino", "Sonrisa"))
+```
+
+Graph for fun
+```{r}
+ggplot(data = bird_by_park_month, aes(x = survey_month, y = bird_total, color = park_name)) +
+  geom_jitter() + 
+  labs(title = "Bird Count in Select Arizona Parks",
+       x = "Survey Month", 
+       y = "Bird Count Total") +
+  theme_light() 
 ```
 

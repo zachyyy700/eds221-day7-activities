@@ -1,0 +1,72 @@
+---
+title: "bird_joins"
+author: "zachyloo"
+format: html
+editor: visual
+---
+
+# Joining Practice
+```{r}
+pacman::p_load("tidyverse", "here")
+```
+
+
+```{r}
+bird_observations <- read_csv(here::here("data", "52_pp52_birds_1.csv"))
+sites <- read_csv(here::here("data", "52_pp52_sites_1.csv"))
+surveys <- read_csv(here::here("data", "52_pp52_surveys_1.csv"))
+taxalist <- read_csv(here::here("data", "52_pp52_taxalist_1.csv"))
+
+bird_subset <- bird_observations |> 
+  filter(species_id %in% c("BHCO", "RWBL"), # MULTIPLES VALUES USE %IN% PLEASE!!!!!
+         site_id %in% c("LI-W", "NU-C"))
+         
+```
+
+## Task 1
+1. Left join
+```{r}
+# left join sites and taxalist dfs
+bird_subset <- left_join(x = bird_subset, y = sites, by = join_by(site_id)) # keep everything in 'x' and matches with 'y'
+bird_subset <- left_join(x = bird_subset, y = taxalist, by = join_by(species_id))
+```
+
+2. Full join
+```{r}
+bird_full <- full_join(x = bird_subset, y = sites, by = join_by(site_id)) # added '.x' and '.y' columns from both dfs
+```
+
+## Task 2
+Initial wrangling
+```{r}
+# rename notes col in bird_obs df
+bird_observations <- bird_observations |> 
+  rename(bird_obs_notes = "notes")
+
+# join bird_obs with taxalist, sites, and survey dfs
+bird_all_subset <- left_join(x = bird_observations, y = taxalist) # by species_id
+bird_all_subset <- left_join(x = bird_all_subset, y = sites) # by site_id
+bird_all_subset <- left_join(x = bird_all_subset, y = surveys) # by site_id
+
+# limit cols
+bird_all_subset <- bird_all_subset |> 
+  select(survey_date, common_name, park_name, bird_count)
+```
+
+Lubridation action
+```{r}
+# extract month from survey_date col into a new col
+bird_all_subset <- bird_all_subset |> 
+  mutate(survey_month = lubridate::month(survey_date)) |> 
+  mutate(survey_month = as.factor(survey_month)) |>  # convert to factor
+  relocate(survey_month, .after = survey_date) # relocate to after survey_date col
+```
+
+Find total number of birds by park and month
+```{r}
+bird_by_park_month <- bird_all_subset |> 
+  group_by(park_name, survey_month) |> 
+  summarize(bird_total = sum(bird_count, na.rm = TRUE)) |> 
+  filter(park_name %in% c("Lindo", "Orme", "Palomino", "Sonrisa"))
+```
+

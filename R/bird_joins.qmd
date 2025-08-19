@@ -29,6 +29,10 @@ bird_subset <- bird_observations |>
 # left join sites and taxalist dfs
 bird_left <- left_join(x = bird_subset, y = sites, by = join_by(site_id)) # keep everything in 'x' and matches with 'y'
 bird_left <- left_join(x = bird_left, y = taxalist, by = join_by(species_id))
+
+# piped version
+bird_left2 <- left_join(x = bird_subset, y = sites, by = join_by(site_id)) |> 
+  left_join(taxalist)
 ```
 
 2. Full join
@@ -47,6 +51,12 @@ bird_observations <- bird_observations |>
 bird_all_subset <- left_join(x = bird_observations, y = taxalist) # by species_id
 bird_all_subset <- left_join(x = bird_all_subset, y = sites) # by site_id
 bird_all_subset <- left_join(x = bird_all_subset, y = surveys) # by site_id
+
+# piped version
+bird_all_subset2 <- left_join(x = bird_observations, y = taxalist) |> 
+  left_join(taxalist) |> 
+  left_join(sites) |> 
+  left_join(surveys)
 
 # limit cols
 bird_all_subset <- bird_all_subset |> 
@@ -72,8 +82,8 @@ bird_by_park_month <- bird_all_subset |>
 
 Graph for fun
 ```{r}
-ggplot(data = bird_by_park_month, aes(x = survey_month, y = bird_total, color = park_name)) +
-  geom_jitter() + 
+ggplot(data = bird_by_park_month, aes(x = survey_month, y = bird_total, fill = park_name)) +
+  geom_col() + 
   labs(title = "Bird Count in Select Arizona Parks",
        x = "Survey Month", 
        y = "Bird Count Total") +

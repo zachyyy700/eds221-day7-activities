@@ -19,11 +19,7 @@ alarm_report <-data.frame(
 )
 ```
 
-Replace the “Engr” with “Engineering” in the building column
-Separate the building column into two separate columns, building and wing, separated at the dash
-Only keep observations with the word “responded” in the alarm_message column
-Separate the message time from the rest of the message by separating at --
-Convert the date column to a Date class using lubridate
+Replace the “Engr” with “Engineering” in the building column Separate the building column into two separate columns, building and wing, separated at the dash Only keep observations with the word “responded” in the alarm_message column Separate the message time from the rest of the message by separating at -- Convert the date column to a Date class using lubridate
 
 ```{r}
 # Replace the “Engr” with “Engineering” in building col
@@ -33,4 +29,3 @@ alarm_report_fixed <- alarm_report |>
   separate(alarm_message, into = c("time", "message"), sep = "--") |> 
   mutate(date = as_date(date))
 ```
-
